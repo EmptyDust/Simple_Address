@@ -1,25 +1,66 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-
-using System.Diagnostics;
-
 class Student
 {
-    public int num { get; set; }
-    public string name { get; set; }
-    public DateTime date { get; set; }
-    public bool gender { get; set; }
-    public string address { get; set; }
+    public int Num { get; set; }
+    public string Name { get; set; }
+    public DateTime Date { get; set; }
+    public bool Gender { get; set; }
+    public string Address { get; set; }
     public Student? Next { get; set; }
 
     public Student(int num, string name, DateTime date, bool gender, string address, Student? next)
     {
-        this.num = num;
-        this.name = name;
-        this.date = date;
-        this.gender = gender;
-        this.address = address;
+        this.Num = num;
+        this.Name = name;
+        this.Date = date;
+        this.Gender = gender;
+        this.Address = address;
         this.Next = next;
+    }
+    public static DateTime setDate()
+    {
+        int year, month, day;
+        Console.WriteLine("请输入年份：");
+        year = Convert.ToInt32(Console.ReadLine());
+        Console.WriteLine("请输入月份：");
+        month = Convert.ToInt32(Console.ReadLine());
+        Console.WriteLine("请输入日期：");
+        day = Convert.ToInt32(Console.ReadLine());
+        DateTime date = new(year, month, day);
+        return date;
+    }
+    public static string getDate(DateTime dateTime)
+    {
+        return dateTime.Year + "年" + dateTime.Month + "月" + dateTime.Day + "日";
+    }
+    public static string getGender(bool gender)
+    {
+        if (gender)
+        {
+            return "男";
+        }
+        else
+        {
+            return "女";
+        }
+    }
+    public static bool setGender()
+    {
+        string? gender = Console.ReadLine();
+        while (gender != "man" && gender != "woman")
+        {
+            Console.WriteLine("请正确输入性别：");
+            gender = Console.ReadLine();
+        }
+        if (gender == "man")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
 
@@ -28,7 +69,7 @@ class Address
     public string name { get; set; }
 
     public Student? Next { get; set; }
-    public Address? nextAddress { get; set; }
+    public Address? NextAddress { get; set; }
 
     public Address(string name, Student? next)
     {
@@ -46,9 +87,17 @@ class Address
         Student? temp = Next;
         while (temp != null)
         {
-            if (temp.num == student.num)
+            if (temp.Num == student.Num)
             {
                 Console.WriteLine("学生已存在！");
+                return;
+            }
+            //sort
+            if (temp.Next == null || temp.Next.Num > student.Num)
+            {
+                student.Next = temp.Next;
+                temp.Next = student;
+                Console.WriteLine("学生添加成功！");
                 return;
             }
             if (temp.Next == null)
@@ -68,7 +117,7 @@ class Address
             Console.WriteLine("通讯录为空！");
             return;
         }
-        if (temp.num == num)
+        if (temp.Num == num)
         {
             Next = temp.Next;
             Console.WriteLine("学生删除成功！");
@@ -76,7 +125,7 @@ class Address
         }
         while (temp.Next != null)
         {
-            if (temp.Next.num == num)
+            if (temp.Next.Num == num)
             {
                 temp.Next = temp.Next.Next;
                 Console.WriteLine("学生删除成功！");
@@ -91,7 +140,7 @@ class Address
         Student? temp = Next;
         while (temp != null)
         {
-            if (temp.num == num)
+            if (temp.Num == num)
             {
                 return temp;
             }
@@ -111,7 +160,7 @@ class Address
         Console.WriteLine("学号\t姓名\t出生日期\t性别\t地址");
         while (temp != null)
         {
-            Console.WriteLine(temp.num+"\t"+temp.name+"\t"+Tools.outputDate(temp.date)+"\t"+Tools.getGender(temp.gender)+"\t"+temp.address);
+            Console.WriteLine(temp.Num + "\t" + temp.Name + "\t" + Student.getDate(temp.Date) + "\t" + Student.getGender(temp.Gender) + "\t" + temp.Address);
             temp = temp.Next;
         }
     }
@@ -133,7 +182,7 @@ class AddressBook
             {
                 return temp;
             }
-            temp = temp.nextAddress;
+            temp = temp.NextAddress;
         }
         return null;
     }
@@ -142,19 +191,19 @@ class AddressBook
         Address? temp = Address;
         while (temp != null)
         {
-            if (temp.nextAddress != null && temp.nextAddress.name == address.name)
+            if (temp.NextAddress != null && temp.NextAddress.name == address.name)
             {
                 Console.WriteLine("通讯录已存在！");
                 return;
             }
-            if (temp.nextAddress == null)
+            if (temp.NextAddress == null)
             {
-                temp.nextAddress = address;
+                temp.NextAddress = address;
                 Console.WriteLine("通讯录创建成功！");
                 main.operateAddress(address);
                 return;
             }
-            temp = temp.nextAddress;
+            temp = temp.NextAddress;
         }
     }
 }
@@ -165,7 +214,7 @@ class main
     {
         while (true)
         {
-            Console.WriteLine("欢迎使用一个脑残用c#写的学生通讯录管理系统。");
+            Console.WriteLine("欢迎使用一个用c#写的学生通讯录管理系统。");
             Console.WriteLine("请输入你要进行的操作：");
             Console.WriteLine("1.新建通讯录");
             Console.WriteLine("2.打开通讯录");
@@ -240,14 +289,9 @@ class main
                         name = Console.ReadLine();
                     }
                     Console.WriteLine("请输入学生出生日期：");
-                    DateTime? date = Tools.inputDate();
-                    while (date == null)
-                    {
-                        Console.WriteLine("学生出生日期不能为空，请重新输入：");
-                        date = Tools.inputDate();
-                    }
+                    DateTime date = Student.setDate();
                     Console.WriteLine("请输入学生性别:");
-                    bool gender = Tools.inputGender();
+                    bool gender = Student.setGender();
                     Console.WriteLine("请输入学生地址：");
                     string? address2 = Console.ReadLine();
                     while (address2 == null)
@@ -255,7 +299,7 @@ class main
                         Console.WriteLine("学生地址不能为空，请重新输入：");
                         address2 = Console.ReadLine();
                     }
-                    address.AddStudent(new Student((int)num, name, (DateTime)date, gender, address2, null));
+                    address.AddStudent(new Student((int)num, name, date, gender, address2, null));
                     break;
                 case 2:
                     Console.WriteLine("请输入要删除的学生学号：");
@@ -297,11 +341,11 @@ class main
                         Console.WriteLine("学生不存在！");
                         break;
                     }
-                    Console.WriteLine("学号：" + student2.num);
-                    Console.WriteLine("姓名：" + student2.name);
-                    Console.WriteLine("出生日期：" + Tools.outputDate(student2.date));
-                    Console.WriteLine("性别:"+Tools.getGender(student2.gender));
-                    Console.WriteLine("地址：" + student2.address);
+                    Console.WriteLine("学号：" + student2.Num);
+                    Console.WriteLine("姓名：" + student2.Name);
+                    Console.WriteLine("出生日期：" + Student.getDate(student2.Date));
+                    Console.WriteLine("性别:" + Student.getGender(student2.Gender));
+                    Console.WriteLine("地址：" + student2.Address);
                     break;
                 case 5:
                     address.show();
@@ -316,7 +360,7 @@ class main
     }
     public static void operateStudent(Student student)
     {
-        while(true)
+        while (true)
         {
             Console.WriteLine("请输入你要进行的操作：");
             Console.WriteLine("1.修改学生姓名");
@@ -335,24 +379,24 @@ class main
                         Console.WriteLine("学生姓名不能为空，请重新输入：");
                         name = Console.ReadLine();
                     }
-                    student.name = name;
+                    student.Name = name;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 2:
                     Console.WriteLine("请输入学生出生日期：");
-                    DateTime? date = Tools.inputDate();
+                    DateTime? date = Student.setDate();
                     while (date == null)
                     {
                         Console.WriteLine("学生出生日期不能为空，请重新输入：");
-                        date = Tools.inputDate();
+                        date = Student.setDate();
                     }
-                    student.date = (DateTime)date;
+                    student.Date = (DateTime)date;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 3:
                     Console.WriteLine("请输入学生性别：");
-                    bool gender = Tools.inputGender();
-                    student.gender = (bool)gender;
+                    bool gender = Student.setGender();
+                    student.Gender = (bool)gender;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 4:
@@ -363,7 +407,7 @@ class main
                         Console.WriteLine("学生地址不能为空，请重新输入：");
                         address = Console.ReadLine();
                     }
-                    student.address = address;
+                    student.Address = address;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 5:
@@ -376,49 +420,3 @@ class main
     }
 }
 
-static class Tools
-{
-    public static DateTime inputDate()
-    {
-        int year, month, day;
-        Console.WriteLine("请输入年份：");
-        year = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("请输入月份：");
-        month = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("请输入日期：");
-        day = Convert.ToInt32(Console.ReadLine());
-        DateTime date = new DateTime(year, month, day);
-        return date;
-    }
-    public static string outputDate(DateTime dateTime)
-    {
-        return dateTime.Year+"年"+dateTime.Month+"月"+dateTime.Day+"日";
-    }
-    public static string getGender(bool gender) {
-        if (gender)
-        {
-            return "男";
-        }
-        else
-        {
-            return "女";
-        }
-    }
-    public static bool inputGender()
-    {
-        string? gender = Console.ReadLine();
-        while(gender != "man"&&gender!="woman")
-        {
-            Console.WriteLine("请正确输入性别：");
-            gender = Console.ReadLine();
-        }
-        if (gender == "man")
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-}
