@@ -93,7 +93,7 @@ class Address
                 return;
             }
             //sort
-            if (temp.Next == null || temp.Next.Num > student.Num)
+            if (temp.Next != null && temp.Next.Num > student.Num)
             {
                 student.Next = temp.Next;
                 temp.Next = student;
