@@ -1,4 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// github: https://github.com/EmptyDust/Simple_Address/
+// author: EmptyDust
+// description: just a homework
 
 class Student
 {
@@ -11,22 +13,37 @@ class Student
 
     public Student(int num, string name, DateTime date, bool gender, string address, Student? next)
     {
-        this.Num = num;
-        this.Name = name;
-        this.Date = date;
-        this.Gender = gender;
-        this.Address = address;
-        this.Next = next;
+        Num = num;
+        Name = name;
+        Date = date;
+        Gender = gender;
+        Address = address;
+        Next = next;
     }
     public static DateTime setDate()
     {
         int year, month, day;
         Console.WriteLine("请输入年份：");
-        year = Convert.ToInt32(Console.ReadLine());
+        year = Tools.inputInt();
+        while(year > DateTime.Now.Year)
+        {
+            Console.WriteLine("年份不能大于当前年份，请重新输入：");
+            year = Tools.inputInt();
+        }
         Console.WriteLine("请输入月份：");
-        month = Convert.ToInt32(Console.ReadLine());
+        month = Tools.inputInt();
+        while (month > 12 || month < 1)
+        {
+            Console.WriteLine("月份必须在1-12之间，请重新输入：");
+            month = Tools.inputInt();
+        }
         Console.WriteLine("请输入日期：");
-        day = Convert.ToInt32(Console.ReadLine());
+        day = Tools.inputInt();
+        while (day > 31 || day < 1)
+        {
+            Console.WriteLine("日期必须在1-31之间，请重新输入：");
+            day = Tools.inputInt();
+        }
         DateTime date = new(year, month, day);
         return date;
     }
@@ -66,15 +83,15 @@ class Student
 
 class Address
 {
-    public string name { get; set; }
+    public string Name { get; set; }
 
     public Student? Next { get; set; }
     public Address? NextAddress { get; set; }
 
     public Address(string name, Student? next)
     {
-        this.name = name;
-        this.Next = next;
+        Name = name;
+        Next = next;
     }
     public void AddStudent(Student student)
     {
@@ -150,7 +167,7 @@ class Address
     }
     public void show()
     {
-        Console.WriteLine("通讯录名称：" + name);
+        Console.WriteLine("通讯录名称：" + Name);
         Student? temp = Next;
         if (temp == null)
         {
@@ -178,7 +195,7 @@ class AddressBook
         Address? temp = Address;
         while (temp != null)
         {
-            if (temp.name == name)
+            if (temp.Name == name)
             {
                 return temp;
             }
@@ -191,9 +208,10 @@ class AddressBook
         Address? temp = Address;
         while (temp != null)
         {
-            if (temp.NextAddress != null && temp.NextAddress.name == address.name)
+            if (temp.NextAddress != null && temp.NextAddress.Name == address.Name)
             {
                 Console.WriteLine("通讯录已存在！");
+                main.operateAddress(temp.NextAddress);
                 return;
             }
             if (temp.NextAddress == null)
@@ -201,6 +219,20 @@ class AddressBook
                 temp.NextAddress = address;
                 Console.WriteLine("通讯录创建成功！");
                 main.operateAddress(address);
+                return;
+            }
+            temp = temp.NextAddress;
+        }
+    }
+    public void deleteAddress(Address address)
+    {
+        Address? temp = Address;
+        while (temp != null)
+        {
+               if (temp.NextAddress != null && temp.NextAddress.Name == address.Name)
+            {
+                temp.NextAddress = temp.NextAddress.NextAddress;
+                Console.WriteLine("通讯录删除成功！");
                 return;
             }
             temp = temp.NextAddress;
@@ -218,8 +250,9 @@ class main
             Console.WriteLine("请输入你要进行的操作：");
             Console.WriteLine("1.新建通讯录");
             Console.WriteLine("2.打开通讯录");
-            Console.WriteLine("3.退出");
-            int choice = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("3.删除通讯录");
+            Console.WriteLine("4.退出");
+            int choice = Tools.inputInt();
             switch (choice)
             {
                 case 1:
@@ -250,6 +283,22 @@ class main
                     operateAddress(address2);
                     break;
                 case 3:
+                    Console.WriteLine("请输入要删除的通讯录名称：");
+                    string? name3 = Console.ReadLine();
+                    while (name3 == null)
+                    {
+                        Console.WriteLine("通讯录名称不能为空，请重新输入：");
+                        name3 = Console.ReadLine();
+                    }
+                    Address? address3 = root.getAddress(name3);
+                    if (address3 == null)
+                    {
+                        Console.WriteLine("通讯录不存在！");
+                        break;
+                    }
+                    root.deleteAddress(address3);
+                    break;
+                case 4:
                     Console.WriteLine("感谢使用！");
                     return;
                 default:
@@ -270,17 +319,12 @@ class main
             Console.WriteLine("4.查找学生信息");
             Console.WriteLine("5.显示所有学生信息");
             Console.WriteLine("6.返回上一级");
-            int choice2 = Convert.ToInt32(Console.ReadLine());
+            int choice2 = Tools.inputInt();
             switch (choice2)
             {
                 case 1:
                     Console.WriteLine("请输入学生学号：");
-                    int? num = Convert.ToInt32(Console.ReadLine());
-                    while (num == null)
-                    {
-                        Console.WriteLine("学生学号不能为空，请重新输入：");
-                        num = Convert.ToInt32(Console.ReadLine());
-                    }
+                    int num = Tools.inputInt();
                     Console.WriteLine("请输入学生姓名：");
                     string? name = Console.ReadLine();
                     while (name == null)
@@ -299,27 +343,17 @@ class main
                         Console.WriteLine("学生地址不能为空，请重新输入：");
                         address2 = Console.ReadLine();
                     }
-                    address.AddStudent(new Student((int)num, name, date, gender, address2, null));
+                    address.AddStudent(new Student(num, name, date, gender, address2, null));
                     break;
                 case 2:
                     Console.WriteLine("请输入要删除的学生学号：");
-                    int? num2 = Convert.ToInt32(Console.ReadLine());
-                    while (num2 == null)
-                    {
-                        Console.WriteLine("学生学号不能为空，请重新输入：");
-                        num2 = Convert.ToInt32(Console.ReadLine());
-                    }
-                    address.deleteStudent((int)num2);
+                    int num2 = Tools.inputInt();
+                    address.deleteStudent(num2);
                     break;
                 case 3:
                     Console.WriteLine("请输入要修改的学生学号：");
-                    int? num3 = Convert.ToInt32(Console.ReadLine());
-                    while (num3 == null)
-                    {
-                        Console.WriteLine("学生学号不能为空，请重新输入：");
-                        num3 = Convert.ToInt32(Console.ReadLine());
-                    }
-                    Student? student = address.getStudent((int)num3);
+                    int num3 = Tools.inputInt();
+                    Student? student = address.getStudent(num3);
                     if (student == null)
                     {
                         Console.WriteLine("学生不存在！");
@@ -329,13 +363,8 @@ class main
                     break;
                 case 4:
                     Console.WriteLine("请输入要查找的学生学号：");
-                    int? num4 = Convert.ToInt32(Console.ReadLine());
-                    while (num4 == null)
-                    {
-                        Console.WriteLine("学生学号不能为空，请重新输入：");
-                        num4 = Convert.ToInt32(Console.ReadLine());
-                    }
-                    Student? student2 = address.getStudent((int)num4);
+                    int num4 = Tools.inputInt();
+                    Student? student2 = address.getStudent(num4);
                     if (student2 == null)
                     {
                         Console.WriteLine("学生不存在！");
@@ -368,7 +397,7 @@ class main
             Console.WriteLine("3.修改学生性别");
             Console.WriteLine("4.修改学生地址");
             Console.WriteLine("5.返回上一级");
-            int choice3 = Convert.ToInt32(Console.ReadLine());
+            int choice3 = Tools.inputInt();
             switch (choice3)
             {
                 case 1:
@@ -384,19 +413,14 @@ class main
                     break;
                 case 2:
                     Console.WriteLine("请输入学生出生日期：");
-                    DateTime? date = Student.setDate();
-                    while (date == null)
-                    {
-                        Console.WriteLine("学生出生日期不能为空，请重新输入：");
-                        date = Student.setDate();
-                    }
-                    student.Date = (DateTime)date;
+                    DateTime date = Student.setDate();
+                    student.Date = date;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 3:
                     Console.WriteLine("请输入学生性别：");
                     bool gender = Student.setGender();
-                    student.Gender = (bool)gender;
+                    student.Gender = gender;
                     Console.WriteLine("学生信息修改成功！");
                     break;
                 case 4:
@@ -420,3 +444,22 @@ class main
     }
 }
 
+class Tools
+{
+    public static int inputInt()
+    {
+        int? num = null;
+        while (num == null)
+        {
+            try
+            {
+                num = Convert.ToInt32(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("输入错误，请重新输入：");
+            }
+        }
+        return (int)num;
+    }
+}
