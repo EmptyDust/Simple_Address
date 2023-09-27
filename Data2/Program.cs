@@ -2,6 +2,8 @@
 // author: EmptyDust
 // description: just a homework
 
+using Newtonsoft.Json;
+
 class Student
 {
     public int Num { get; set; }
@@ -30,7 +32,7 @@ class Student
             {
                 Console.WriteLine("请输入年份：");
                 year = Tools.inputInt();
-                while(year >= DateTime.Now.Year)
+                while (year >= DateTime.Now.Year)
                 {
                     Console.WriteLine("年份不能大于当前年份，请重新输入：");
                     year = Tools.inputInt();
@@ -197,7 +199,7 @@ class Address
 
 class AddressBook
 {
-    Address Address { get; set; }
+    public Address Address { get; set; }
     public AddressBook(Address address)
     {
         Address = address;
@@ -241,7 +243,7 @@ class AddressBook
         Address? temp = Address;
         while (temp != null)
         {
-               if (temp.NextAddress != null && temp.NextAddress.Name == address.Name)
+            if (temp.NextAddress != null && temp.NextAddress.Name == address.Name)
             {
                 temp.NextAddress = temp.NextAddress.NextAddress;
                 Console.WriteLine("通讯录删除成功！");
@@ -253,9 +255,12 @@ class AddressBook
 }
 class main
 {
-    static AddressBook root = new AddressBook(new Address("root", null));
+    static AddressBook? root;
     public static void Main(string[] args)
     {
+        root = JsonFile.ReadFile();
+        if (root == null)
+            root = new AddressBook(new Address("root", null));
         while (true)
         {
             Console.WriteLine("欢迎使用一个用c#写的学生通讯录管理系统。");
@@ -263,7 +268,8 @@ class main
             Console.WriteLine("1.新建通讯录");
             Console.WriteLine("2.打开通讯录");
             Console.WriteLine("3.删除通讯录");
-            Console.WriteLine("4.退出");
+            Console.WriteLine("4.保存通讯录");
+            Console.WriteLine("5.退出");
             int choice = Tools.inputInt();
             switch (choice)
             {
@@ -311,6 +317,9 @@ class main
                     root.deleteAddress(address3);
                     break;
                 case 4:
+                    JsonFile.WriteFIle(root);
+                    break;
+                case 5:
                     Console.WriteLine("感谢使用！");
                     return;
                 default:
@@ -453,6 +462,24 @@ class main
                     break;
             }
         }
+    }
+}
+class JsonFile
+{
+    static string filepath = @"D:/tempJson.json";//JSON文件路径
+    public static void WriteFIle(AddressBook addressBook)
+    {
+        string json = JsonConvert.SerializeObject(addressBook, Newtonsoft.Json.Formatting.Indented);
+        //string json = JsonConvert.SerializeObject(address, Formatting.Indented);
+        Console.WriteLine(json);
+        File.WriteAllText(filepath, json);
+    }
+    public static AddressBook? ReadFile()
+    {
+        string json = File.ReadAllText(filepath);
+        AddressBook? addressBook = JsonConvert.DeserializeObject<AddressBook>(json);
+        Console.WriteLine(addressBook);
+        return addressBook;
     }
 }
 
