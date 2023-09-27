@@ -23,28 +23,40 @@ class Student
     public static DateTime setDate()
     {
         int year, month, day;
-        Console.WriteLine("请输入年份：");
-        year = Tools.inputInt();
-        while(year > DateTime.Now.Year)
+        DateTime date;
+        while (true)
         {
-            Console.WriteLine("年份不能大于当前年份，请重新输入：");
-            year = Tools.inputInt();
+            try
+            {
+                Console.WriteLine("请输入年份：");
+                year = Tools.inputInt();
+                while(year >= DateTime.Now.Year)
+                {
+                    Console.WriteLine("年份不能大于当前年份，请重新输入：");
+                    year = Tools.inputInt();
+                }
+                Console.WriteLine("请输入月份：");
+                month = Tools.inputInt();
+                while (month > 12 || month < 1)
+                {
+                    Console.WriteLine("月份输入错误，请重新输入：");
+                    month = Tools.inputInt();
+                }
+                Console.WriteLine("请输入日期：");
+                day = Tools.inputInt();
+                while (day < 1 || day > 31)
+                {
+                    Console.WriteLine("日期输入错误，请重新输入：");
+                    day = Tools.inputInt();
+                }
+                date = new(year, month, day);
+                break;
+            }
+            catch
+            {
+                Console.WriteLine("输入错误，请重新输入：");
+            }
         }
-        Console.WriteLine("请输入月份：");
-        month = Tools.inputInt();
-        while (month > 12 || month < 1)
-        {
-            Console.WriteLine("月份必须在1-12之间，请重新输入：");
-            month = Tools.inputInt();
-        }
-        Console.WriteLine("请输入日期：");
-        day = Tools.inputInt();
-        while (day > 31 || day < 1)
-        {
-            Console.WriteLine("日期必须在1-31之间，请重新输入：");
-            day = Tools.inputInt();
-        }
-        DateTime date = new(year, month, day);
         return date;
     }
     public static string getDate(DateTime dateTime)
